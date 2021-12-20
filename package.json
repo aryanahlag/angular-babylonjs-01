@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",
     "babylonjs": "^5.0.0-alpha.63",
+    "babylonjs-gui": "^5.0.0-alpha.64",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
