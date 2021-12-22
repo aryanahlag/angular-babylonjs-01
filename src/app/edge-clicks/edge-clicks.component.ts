@@ -15,19 +15,20 @@ import * as GUI from 'babylonjs-gui'
   styleUrls: ['./edge-clicks.component.scss'],
 })
 export class EdgeClicksComponent implements OnInit {
-  @ViewChild('canvas', { static: true }) canvas: ElementRef<HTMLCanvasElement>
+  @ViewChild('canvas', {static: true}) canvas: ElementRef<HTMLCanvasElement>
 
   private engine = BABYLON.Engine
   private scene = BABYLON.Scene
 
-  constructor() {}
+  constructor() {
+  }
 
   ngOnInit(): void {
-    var engine = new BABYLON.Engine(this.canvas.nativeElement, true)
-    var scene = new BABYLON.Scene(engine)
+    const engine = new BABYLON.Engine(this.canvas.nativeElement, true)
+    const scene = new BABYLON.Scene(engine)
 
     // creating camera
-    var camera = this.createCamera(scene, this.canvas.nativeElement)
+    const camera = this.createCamera(scene, this.canvas.nativeElement)
 
     // allow mouse deplacement
     camera.attachControl(this.canvas.nativeElement, true)
@@ -38,7 +39,7 @@ export class EdgeClicksComponent implements OnInit {
     // running babylonJS
     engine.runRenderLoop(() => {
       scene.render()
-    });
+    })
   }
 
   createCamera(scene: BABYLON.Scene, canvas: HTMLCanvasElement) {
@@ -47,9 +48,9 @@ export class EdgeClicksComponent implements OnInit {
       0,
       10,
       10,
-      new BABYLON.Vector3(0, 13, 15),
+      new BABYLON.Vector3(15, 30, -5),
       scene
-    );
+    )
 
     camera.setTarget(BABYLON.Vector3.Zero())
     camera.attachControl(canvas, true)
@@ -63,40 +64,48 @@ export class EdgeClicksComponent implements OnInit {
       new BABYLON.Vector3(3, 6, 10),
       scene
     )
-    light.intensity = 0.7;
+    light.intensity = 0.7
 
-    var box = BABYLON.MeshBuilder.CreateBox(
+    const box = BABYLON.MeshBuilder.CreateBox(
       'Box',
-      { width: 5, height: 5, depth: 5 },
+      {width: 5, height: 5, depth: 5},
       scene
     )
-    box.position = new BABYLON.Vector3(0, 0, 0)
+    box.position.x = 0
+    box.position.y = 0
+    box.position.z = 0
 
-    var sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 6, scene)
+    const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 6, scene)
     sphere.position.x = -10
+    sphere.position.y = 0
+    sphere.position.z = -10
 
     // GUI PANEL
-    var nextTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI')
-    var panel = new GUI.StackPanel()
-    panel.width = '100px'
-    panel.isVertical = false
+    const nextTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI')
+    const panel = new GUI.StackPanel()
+    panel.width = '300px'
+    panel.height = '300px'
+    panel.paddingTop = '30px'
+    panel.fontSize = '14px'
     panel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT
     panel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER
     nextTexture.addControl(panel)
 
-    var checkbox = new GUI.Checkbox()
-    checkbox.width = "20px"
-    checkbox.height = "20px"
-    checkbox.isChecked = true
-    checkbox.color = "green"
-    // checkbox.onIsCheckedChangedObservable.add(function(value) {
-    //     if (box) {
-    //         box.useVertexColors = value
-    //     }
-    // })
-    panel.addControl(checkbox)
-
-    let statusMesh = '';
+    let statusMesh = ''
+    const header = new GUI.TextBlock()
+    header.text = 'scalling'
+    header.height = "40px"
+    header.color = "green"
+    header.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    panel.addControl(header)
+    const slider = new GUI.Slider()
+    slider.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    slider.minimum = 1
+    slider.maximum = 5
+    slider.value = 0
+    slider.color = 'green'
+    slider.height = '20px'
+    slider.width = '200px'
 
     box.actionManager = new BABYLON.ActionManager(scene)
     box.actionManager.registerAction(
@@ -106,10 +115,11 @@ export class EdgeClicksComponent implements OnInit {
           box.enableEdgesRendering()
           box.edgesWidth = 10.0
           box.edgesColor = new BABYLON.Color4(0, 0, 1, 1)
-          sphere.renderOutline = false;
-          sphere.disableEdgesRendering();
-          statusMesh = 'box';
+          sphere.renderOutline = false
+          statusMesh = 'box'
           console.log(statusMesh)
+          header.text = 'scalling box'
+          slider.value = box.scaling.x
         }
       )
     )
@@ -119,16 +129,58 @@ export class EdgeClicksComponent implements OnInit {
       new BABYLON.ExecuteCodeAction(
         BABYLON.ActionManager.OnPickUpTrigger,
         function () {
-          sphere.enableEdgesRendering(undefined, true);
           box.disableEdgesRendering()
-          sphere.renderOutline = true;
-          statusMesh = 'sphere';
+          sphere.renderOutline = true
+          statusMesh = 'sphere'
           console.log(statusMesh)
+          header.text = 'scalling sphere'
+          slider.value = sphere.scaling.x
         }
       )
     )
 
+    slider.onValueChangedObservable.add((v) => {
+      if (statusMesh == 'sphere') {
+        sphere.scaling.x = v
+      } else if (statusMesh == 'box') {
+        box.scaling.x = v
+      }
+    })
+    panel.addControl(slider)
 
+    // let params = [
+    //   {name: 'Scalling'},
+    //   {name: 'PositionX'},
+    //   {name: 'PositionY'},
+    //   {name: 'RotationX'},
+    //   {name: 'RotationY'},
+    // ]
+    //
+    // params.forEach((params) => {
+    //   const header = new GUI.TextBlock()
+    //   header.text = params.name
+    //   // header.paddingBottom = "37px"
+    //   header.height = "40px"
+    //   header.color = "green"
+    //   header.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    //   panel.addControl(header)
+    //   const slider = new GUI.Slider()
+    //   slider.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    //   slider.minimum = 1
+    //   slider.maximum = 5
+    //   slider.color = 'green'
+    //   slider.value = 0
+    //   slider.height = '20px'
+    //   slider.width = '200px'
+    //   slider.onValueChangedObservable.add((v) => {
+    //     if (statusMesh == 'sphere') {
+    //       sphere.scaling.x = v
+    //     } else if (statusMesh == 'box') {
+    //       box.scaling.x = v
+    //     }
+    //   })
+    //   panel.addControl(slider)
+    // })
 
   }
 }
