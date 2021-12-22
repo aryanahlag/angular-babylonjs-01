@@ -3,7 +3,6 @@ import {
   OnInit,
   ViewChild,
   ElementRef,
-  Output,
 } from '@angular/core'
 import * as BABYLON from 'babylonjs'
 import * as GUI from 'babylonjs-gui'
@@ -16,9 +15,6 @@ import * as GUI from 'babylonjs-gui'
 })
 export class EdgeClicksComponent implements OnInit {
   @ViewChild('canvas', {static: true}) canvas: ElementRef<HTMLCanvasElement>
-
-  private engine = BABYLON.Engine
-  private scene = BABYLON.Scene
 
   constructor() {
   }
@@ -43,14 +39,7 @@ export class EdgeClicksComponent implements OnInit {
   }
 
   createCamera(scene: BABYLON.Scene, canvas: HTMLCanvasElement) {
-    const camera = new BABYLON.ArcRotateCamera(
-      'Camera1',
-      0,
-      10,
-      10,
-      new BABYLON.Vector3(15, 30, -5),
-      scene
-    )
+    const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(10, 15, -30), scene)
 
     camera.setTarget(BABYLON.Vector3.Zero())
     camera.attachControl(canvas, true)
@@ -84,8 +73,8 @@ export class EdgeClicksComponent implements OnInit {
     const nextTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI')
     const panel = new GUI.StackPanel()
     panel.width = '300px'
-    panel.height = '300px'
-    panel.paddingTop = '30px'
+    panel.height = '350px'
+    panel.paddingTop = '10px'
     panel.fontSize = '14px'
     panel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT
     panel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER
@@ -98,6 +87,7 @@ export class EdgeClicksComponent implements OnInit {
     header.color = "green"
     header.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
     panel.addControl(header)
+
     const slider = new GUI.Slider()
     slider.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
     slider.minimum = 1
@@ -106,6 +96,42 @@ export class EdgeClicksComponent implements OnInit {
     slider.color = 'green'
     slider.height = '20px'
     slider.width = '200px'
+
+    const sliderRotationX = new GUI.Slider()
+    sliderRotationX.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    sliderRotationX.minimum = 0
+    sliderRotationX.maximum = 5
+    sliderRotationX.value = 0
+    sliderRotationX.color = 'green'
+    sliderRotationX.height = '20px'
+    sliderRotationX.width = '200px'
+
+    const sliderRotationY = new GUI.Slider()
+    sliderRotationY.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    sliderRotationY.minimum = 0
+    sliderRotationY.maximum = 5
+    sliderRotationY.value = 0
+    sliderRotationY.color = 'green'
+    sliderRotationY.height = '20px'
+    sliderRotationY.width = '200px'
+
+    const sliderPositionX = new GUI.Slider()
+    sliderPositionX.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    sliderPositionX.minimum = -10
+    sliderPositionX.maximum = 5
+    sliderPositionX.value = 0
+    sliderPositionX.color = 'green'
+    sliderPositionX.height = '20px'
+    sliderPositionX.width = '200px'
+
+    const sliderPositionY = new GUI.Slider()
+    sliderPositionY.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    sliderPositionY.minimum = 0
+    sliderPositionY.maximum = 5
+    sliderPositionY.value = 0
+    sliderPositionY.color = 'green'
+    sliderPositionY.height = '20px'
+    sliderPositionY.width = '200px'
 
     box.actionManager = new BABYLON.ActionManager(scene)
     box.actionManager.registerAction(
@@ -118,8 +144,11 @@ export class EdgeClicksComponent implements OnInit {
           sphere.renderOutline = false
           statusMesh = 'box'
           console.log(statusMesh)
-          header.text = 'scalling box'
           slider.value = box.scaling.x
+          sliderRotationX.value = box.rotation.x
+          sliderRotationY.value = box.rotation.y
+          sliderPositionX.value = box.position.x
+          sliderPositionY.value = box.position.y
         }
       )
     )
@@ -133,8 +162,11 @@ export class EdgeClicksComponent implements OnInit {
           sphere.renderOutline = true
           statusMesh = 'sphere'
           console.log(statusMesh)
-          header.text = 'scalling sphere'
           slider.value = sphere.scaling.x
+          sliderRotationX.value = sphere.rotation.x
+          sliderRotationY.value = sphere.rotation.y
+          sliderPositionX.value = sphere.position.x
+          sliderPositionY.value = sphere.position.y
         }
       )
     )
@@ -142,45 +174,80 @@ export class EdgeClicksComponent implements OnInit {
     slider.onValueChangedObservable.add((v) => {
       if (statusMesh == 'sphere') {
         sphere.scaling.x = v
+        header.text = 'scalling: ' + sphere.scaling.x.toFixed(2)
       } else if (statusMesh == 'box') {
         box.scaling.x = v
+        header.text = 'scalling: ' + box.scaling.x.toFixed(2)
       }
     })
     panel.addControl(slider)
 
-    // let params = [
-    //   {name: 'Scalling'},
-    //   {name: 'PositionX'},
-    //   {name: 'PositionY'},
-    //   {name: 'RotationX'},
-    //   {name: 'RotationY'},
-    // ]
-    //
-    // params.forEach((params) => {
-    //   const header = new GUI.TextBlock()
-    //   header.text = params.name
-    //   // header.paddingBottom = "37px"
-    //   header.height = "40px"
-    //   header.color = "green"
-    //   header.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
-    //   panel.addControl(header)
-    //   const slider = new GUI.Slider()
-    //   slider.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
-    //   slider.minimum = 1
-    //   slider.maximum = 5
-    //   slider.color = 'green'
-    //   slider.value = 0
-    //   slider.height = '20px'
-    //   slider.width = '200px'
-    //   slider.onValueChangedObservable.add((v) => {
-    //     if (statusMesh == 'sphere') {
-    //       sphere.scaling.x = v
-    //     } else if (statusMesh == 'box') {
-    //       box.scaling.x = v
-    //     }
-    //   })
-    //   panel.addControl(slider)
-    // })
+    const headerRotationX = new GUI.TextBlock()
+    headerRotationX.text = 'rotationX'
+    headerRotationX.height = "40px"
+    headerRotationX.color = "green"
+    headerRotationX.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    panel.addControl(headerRotationX)
+    sliderRotationX.onValueChangedObservable.add((v) => {
+      if (statusMesh == 'sphere') {
+        sphere.rotation.x = v
+        headerRotationX.text = 'rotationX: ' + sphere.rotation.x.toFixed(2)
+      } else if (statusMesh == 'box') {
+        box.rotation.x = v
+        headerRotationX.text = 'rotationX: ' + box.rotation.x.toFixed(2)
+      }
+    })
+    panel.addControl(sliderRotationX)
 
+    const headerRotationY = new GUI.TextBlock()
+    headerRotationY.text = 'rotationY'
+    headerRotationY.height = "40px"
+    headerRotationY.color = "green"
+    headerRotationY.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    panel.addControl(headerRotationY)
+    sliderRotationY.onValueChangedObservable.add((v) => {
+      if (statusMesh == 'sphere') {
+        sphere.rotation.y = v
+        headerRotationY.text = 'rotationY: ' + sphere.rotation.y.toFixed(2)
+      } else if (statusMesh == 'box') {
+        box.rotation.y = v
+        headerRotationY.text = 'rotationY: ' + box.rotation.y.toFixed(2)
+      }
+    })
+    panel.addControl(sliderRotationY)
+
+    const headerPositionX = new GUI.TextBlock()
+    headerPositionX.text = 'positionX'
+    headerPositionX.height = "40px"
+    headerPositionX.color = "green"
+    headerPositionX.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    panel.addControl(headerPositionX)
+    sliderPositionX.onValueChangedObservable.add((v) => {
+      if (statusMesh == 'sphere') {
+        sphere.position.x = v
+        headerPositionX.text = 'positionX: ' + sphere.position.x.toFixed(2)
+      } else if (statusMesh == 'box') {
+        box.position.x = v
+        headerPositionX.text = 'positionX: ' + box.position.x.toFixed(2)
+      }
+    })
+    panel.addControl(sliderPositionX)
+
+    const headerPositionY = new GUI.TextBlock()
+    headerPositionY.text = 'positionY'
+    headerPositionY.height = "40px"
+    headerPositionY.color = "green"
+    headerPositionY.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    panel.addControl(headerPositionY)
+    sliderPositionY.onValueChangedObservable.add((v) => {
+      if (statusMesh == 'sphere') {
+        sphere.position.y = v
+        headerPositionY.text = 'positionY: ' + sphere.position.y.toFixed(2)
+      } else if (statusMesh == 'box') {
+        box.position.y = v
+        headerPositionY.text = 'positionY: ' + box.position.y.toFixed(2)
+      }
+    })
+    panel.addControl(sliderPositionY)
   }
 }
