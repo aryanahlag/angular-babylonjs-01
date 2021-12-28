@@ -1,0 +1,16 @@
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+      <th>USER ID</th>
+      <th style="text-align: left;border: 1px solid black">TITLE</th>
+      <th>ID</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let friend of data">
+      <td style="text-align: center"><span>{{friend.userId}}</span></td>
+      <td style="text-align: left;border: 1px solid black"><span>{{friend.title}}</span></td>
+      <td style="text-align: center"><span>{{friend.id}}</span></td>
+    </tr>
+    </tbody>
+  </table>

@@ -69,6 +69,11 @@ export class EdgeClicksComponent implements OnInit {
     sphere.position.y = 0
     sphere.position.z = -10
 
+    const texture = new BABYLON.StandardMaterial("", scene);
+    texture.diffuseTexture = new BABYLON.Texture("https://i.imgur.com/ntIgFT6.jpg", scene);
+    sphere.material = texture;
+    box.material = texture;
+
     // GUI PANEL
     const nextTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI')
     const panel = new GUI.StackPanel()
@@ -133,43 +138,38 @@ export class EdgeClicksComponent implements OnInit {
     sliderPositionY.height = '20px'
     sliderPositionY.width = '200px'
 
-    box.actionManager = new BABYLON.ActionManager(scene)
-    box.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(
-        BABYLON.ActionManager.OnPickUpTrigger,
-        function () {
-          box.enableEdgesRendering()
-          box.edgesWidth = 10.0
-          box.edgesColor = new BABYLON.Color4(0, 0, 1, 1)
-          sphere.renderOutline = false
-          statusMesh = 'box'
-          console.log(statusMesh)
-          slider.value = box.scaling.x
-          sliderRotationX.value = box.rotation.x
-          sliderRotationY.value = box.rotation.y
-          sliderPositionX.value = box.position.x
-          sliderPositionY.value = box.position.y
-        }
-      )
-    )
-
-    sphere.actionManager = new BABYLON.ActionManager(scene)
-    sphere.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(
-        BABYLON.ActionManager.OnPickUpTrigger,
-        function () {
-          box.disableEdgesRendering()
-          sphere.renderOutline = true
-          statusMesh = 'sphere'
-          console.log(statusMesh)
-          slider.value = sphere.scaling.x
-          sliderRotationX.value = sphere.rotation.x
-          sliderRotationY.value = sphere.rotation.y
-          sliderPositionX.value = sphere.position.x
-          sliderPositionY.value = sphere.position.y
-        }
-      )
-    )
+    scene.onPointerObservable.add((pointerInfo) => {
+      switch (pointerInfo.type) {
+        case BABYLON.PointerEventTypes.POINTERDOWN:
+          // @ts-ignore
+          if (pointerInfo.pickInfo.pickedMesh !== null && pointerInfo.pickInfo.pickedMesh.id === 'sphere1') {
+            console.log('haha')
+            box.disableEdgesRendering()
+            sphere.renderOutline = true
+            statusMesh = 'sphere'
+            console.log(statusMesh)
+            slider.value = sphere.scaling.x
+            sliderRotationX.value = sphere.rotation.x
+            sliderRotationY.value = sphere.rotation.y
+            sliderPositionX.value = sphere.position.x
+            sliderPositionY.value = sphere.position.y
+          }
+          // @ts-ignore
+          else if (pointerInfo.pickInfo.pickedMesh !== null && pointerInfo.pickInfo.pickedMesh.id === 'Box') {
+            console.log('hihi')
+            box.enableEdgesRendering()
+            box.edgesWidth = 10.0
+            box.edgesColor = new BABYLON.Color4(0, 0, 1, 1)
+            sphere.renderOutline = false
+            statusMesh = 'box'
+            slider.value = box.scaling.x
+            sliderRotationX.value = box.rotation.x
+            sliderRotationY.value = box.rotation.y
+            sliderPositionX.value = box.position.x
+            sliderPositionY.value = box.position.y
+          }
+      }
+    })
 
     slider.onValueChangedObservable.add((v) => {
       if (statusMesh == 'sphere') {
