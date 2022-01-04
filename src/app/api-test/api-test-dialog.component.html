@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>Add Data</h2>
+<mat-dialog-content style="width: 500px">
+  <form [formGroup]="formValue">
+    <mat-grid-list cols="12" rowHeight="100px">
+      <mat-grid-tile colspan="12" rowspan="1">
+        <mat-form-field style="width: 100%">
+          <mat-label>TITLE</mat-label>
+          <input formControlName="title" matInput placeholder="type your input" type="text">
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <mat-grid-list cols="12" rowHeight="100px">
+      <mat-grid-tile colspan="12" rowspan="1">
+        <mat-form-field style="width: 100%">
+          <mat-label>BODY</mat-label>
+          <input formControlName="body" matInput placeholder="type your input" type="text">
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <mat-grid-list cols="12" rowHeight="100px">
+      <mat-grid-tile colspan="12" rowspan="1">
+        <mat-form-field style="width: 100%">
+          <mat-label>USER ID</mat-label>
+          <input formControlName="userId" matInput placeholder="type your input" type="number" min="1">
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button (click)="postDataAPI()">Install</button>
+</mat-dialog-actions>
+
+
+<!-- Copyright 2022 Google LLC. All Rights Reserved.
+    Use of this source code is governed by an MIT-style license that
+    can be found in the LICENSE file at https://angular.io/license -->
