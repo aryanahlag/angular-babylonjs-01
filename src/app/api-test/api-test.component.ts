@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {MatTable} from "@angular/material/table";
+import {ApiTestService} from "./api-test.service";
 
 export class config {
   constructor(
@@ -22,10 +23,10 @@ export class config {
 export class ApiTestDialogComponent implements OnInit {
   formValue: FormGroup;
 
-  constructor(private httpClient: HttpClient, private formBuilder: FormBuilder) {
+  constructor(private httpClient: HttpClient, private formBuilder: FormBuilder, private myService: ApiTestService) {
   }
 
-  ngOnInit():void {
+  ngOnInit(): void {
     this.formValue = this.formBuilder.group({
       title: '',
       body: '',
@@ -36,10 +37,17 @@ export class ApiTestDialogComponent implements OnInit {
   postDataAPI() {
     this.httpClient.post<any>('https://jsonplaceholder.typicode.com/posts', this.formValue.value, {headers: {'Content-type': 'application/json; charset=UTF-8'}})
       .subscribe(res => {
-        console.log('data: ',res)
+        this.myService.myMethod(res)
+        alert('create data complete')
+        this.formValue.reset()
       }, err => {
+        alert('create data failed')
         console.log(err)
       })
+  }
+
+  if() {
+
   }
 
 }
@@ -57,7 +65,11 @@ export class ApiTestComponent implements OnInit {
   data: config[];
   @ViewChild(MatTable) table: MatTable<any>
 
-  constructor(private httpClient: HttpClient, public dialog: MatDialog) {
+  constructor(private httpClient: HttpClient, public dialog: MatDialog, private myService: ApiTestService) {
+    this.myService.myMethod$.subscribe((data)=>{
+      this.data.push(data)
+      this.table.renderRows()
+    })
   }
 
   ngOnInit(): void {
@@ -77,15 +89,14 @@ export class ApiTestComponent implements OnInit {
 
   getDataAPI() {
     this.httpClient.get<any>('https://jsonplaceholder.typicode.com/posts').subscribe(res => {
-      console.log("response: ", res)
       this.data = res
     })
   }
 
-  deleteDataAPI(dataElement:any,index:any):void{
-    this.httpClient.delete<any>('https://jsonplaceholder.typicode.com/posts/'+dataElement.id)
+  deleteDataAPI(dataElement: any, index: any): void {
+    this.httpClient.delete<any>('https://jsonplaceholder.typicode.com/posts/' + dataElement.id)
       .subscribe(res => {
-        this.data.splice(index,1)
+        this.data.splice(index, 1)
         this.table.renderRows()
         alert('success delete')
       }, err => {
